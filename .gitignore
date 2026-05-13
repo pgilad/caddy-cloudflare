@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment/local secrets
+.env
+.env.*
+!.env.example
+
+# Logs/temp
+*.log
+tmp/
+temp/
+
+# Build outputs
+build/
+dist/
