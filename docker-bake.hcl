@@ -3,7 +3,7 @@ variable "IMAGE" {
 }
 
 variable "TAG" {
-  default = "2.11.3-alpine"
+  default = "2.11.4-alpine"
 }
 
 group "default" {
