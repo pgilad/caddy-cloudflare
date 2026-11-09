@@ -35,6 +35,8 @@ docker buildx bake --push
 
 The default tag is configured in `docker-bake.hcl`.
 
+GitHub Actions builds the image without publishing it for pull requests and pushes to `main` that change the Dockerfile, Bake configuration, or workflows. Automatic publishing runs only when the Dockerfile or Bake configuration changes on `main`. You can also start the publish workflow manually. The publish workflow skips an existing tag and fails if the registry check returns another error. Use a new tag for each image release.
+
 ## Verify image
 
 ```bash

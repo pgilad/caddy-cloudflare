@@ -7,7 +7,6 @@ on:
     paths:
       - Dockerfile
       - docker-bake.hcl
-      - .github/workflows/publish-image.yaml
   workflow_dispatch:
 
 permissions:
@@ -34,7 +33,25 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Check whether image already exists
+        id: image
+        shell: bash
+        run: |
+          image=$(docker buildx bake --print | jq -er '.target["caddy-cloudflare"].tags[0]')
+          error_file="$RUNNER_TEMP/image-inspect-error"
+
+          if docker buildx imagetools inspect "$image" > /dev/null 2> "$error_file"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Skip publishing: $image already exists." >> "$GITHUB_STEP_SUMMARY"
+          elif grep -Fxq "ERROR: $image: not found" "$error_file"; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          else
+            cat "$error_file" >&2
+            exit 1
+          fi
+
       - name: Build and publish
+        if: steps.image.outputs.exists == 'false'
         uses: docker/bake-action@v7.5.0
         with:
           push: true
